@@ -22,10 +22,11 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
 
   try {
     const session = await stripe.checkout.sessions.create({
+      billing_address_collection: "required",
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: "inr",
             unit_amount: price,
             product_data: {
               name: order.eventTitle,
@@ -34,6 +35,7 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
           quantity: 1,
         },
       ],
+
       metadata: {
         eventId: order.eventId,
         buyerId: order.buyerId,
@@ -51,6 +53,7 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
 
 export const createOrder = async (order: CreateOrderParams) => {
   try {
+    console.log(order);
     await connectToDatabase();
 
     const newOrder = await Order.create({
@@ -58,7 +61,7 @@ export const createOrder = async (order: CreateOrderParams) => {
       event: order.eventId,
       buyer: order.buyerId,
     });
-
+    console.log(newOrder);
     return JSON.parse(JSON.stringify(newOrder));
   } catch (error) {
     handleError(error);
